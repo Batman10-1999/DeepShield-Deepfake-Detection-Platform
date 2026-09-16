@@ -65,7 +65,7 @@ class Settings:
     FRAME_EXTRACTION_STRATEGY: str = _env("DEEPSHIELD_FRAME_STRATEGY", "uniform")
     FRAME_INTERVAL: int = int(_env("DEEPSHIELD_FRAME_INTERVAL", "30"))
     FRAME_SAMPLE_FPS: float = float(_env("DEEPSHIELD_FRAME_SAMPLE_FPS", "1"))
-    MAX_FRAMES_ANALYSED: int = int(_env("DEEPSHIELD_MAX_FRAMES", "24"))
+    MAX_FRAMES_ANALYSED: int = int(_env("DEEPSHIELD_MAX_FRAMES", "10"))
     VIDEO_FRAME_AGGREGATION_STRATEGY: str = _env(
         "DEEPSHIELD_VIDEO_AGGREGATION", "mean"
     )                                     # max | mean | weighted

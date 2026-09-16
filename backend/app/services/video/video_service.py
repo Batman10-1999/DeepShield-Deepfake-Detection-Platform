@@ -1,18 +1,19 @@
 """Video detection orchestration.
 
-Sequence for a single video:
+Video analysis uses the pretrained DeepfakeDetector methodology:
+10 uniformly sampled full frames with averaged class probabilities.
 
-    metadata -> frame extraction -> per-frame image pipeline
-             -> frame aggregation -> scoring -> decision -> response
-
-Nothing about CNNs, faces or calibration is re-implemented here: every
-frame is pushed through the exact services the image detector uses, and
-this module only owns sequencing, aggregation and timing.
+The existing frame-analysis pipeline is retained for frame-level evidence,
+timeline information and Grad-CAM explanations. The final video verdict is
+driven by the dedicated full-frame video inference path.
 """
 from __future__ import annotations
 
 import time
 from pathlib import Path
+from app.services.video.upstream_video_inference import (
+    UpstreamVideoInference,
+)
 
 from app.core.config import settings
 from app.core.constants import LogEvent
@@ -68,6 +69,7 @@ class VideoAnalysisService:
         self._scorer = AuthenticityScorer()
         self._risk = RiskAssessor()
         self._decision = DecisionEngine()
+        self._upstream_video = UpstreamVideoInference()
 
     def analyse(
         self,
@@ -123,10 +125,51 @@ class VideoAnalysisService:
         logger.info("%s: %s (%d analysed, %d skipped)",
                     LogEvent.FRAME_ANALYSIS_COMPLETED, display_name,
                     len(analyses), extraction.count - len(analyses))
+        upstream_result = self._upstream_video.analyze(video_path)
 
+        logger.info(
+            "Upstream video inference: frames=%d fake=%.4f real=%.4f class=%d",
+            upstream_result.frames_analyzed,
+            upstream_result.fake_probability,
+            upstream_result.real_probability,
+            upstream_result.predicted_class,
+        )
         with metrics.measure(Stage.AGGREGATION):
             aggregate = self._aggregator.aggregate(
-                [self._verdict(a) for a in analyses])
+                [self._verdict(a) for a in analyses]
+            )
+
+            aggregate = aggregate.__class__(
+                fake_probability=round(upstream_result.fake_probability, 6),
+                confidence=round(
+                    max(
+                        upstream_result.real_probability,
+                        upstream_result.fake_probability,
+                    ) * 100.0,
+                    2,
+                ),
+                strategy="upstream_10_frame_mean",
+                frames_analysed=upstream_result.frames_analyzed,
+                real_frames=(
+                    upstream_result.frames_analyzed
+                    if upstream_result.predicted_class == 0
+                    else 0
+                ),
+                fake_frames=(
+                    upstream_result.frames_analyzed
+                    if upstream_result.predicted_class == 1
+                    else 0
+                ),
+                suspicious_frames=0,
+                manual_review_frames=0,
+                agreement=100.0,
+                consistent=True,
+                dominant_frame_number=(
+                    upstream_result.sampled_frame_indexes[0]
+                    if upstream_result.sampled_frame_indexes
+                    else analyses[0].frame.frame_number
+                    ),
+                )
         logger.info(
             "%s: %s -> fake=%.2f%% (agreement=%.1f%%, R=%d F=%d S=%d M=%d)",
             LogEvent.FRAME_AGGREGATION_COMPLETED, display_name,

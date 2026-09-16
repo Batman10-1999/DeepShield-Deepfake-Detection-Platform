@@ -63,21 +63,24 @@ def _narrative(
 ) -> str:
     if dominant is None:
         return (
-            "Grad-CAM found no concentrated activation: the model's attention "
-            "is spread evenly across the frame, which is typical of authentic "
-            "media."
+            f"The model assigned a fake probability of {fake_percentage:.1f}%. "
+            "Grad-CAM did not identify a single concentrated activation region."
         )
+
     verdict = (
-        "strongly manipulated" if fake_percentage >= 60
-        else "partially inconsistent" if fake_percentage >= 40
-        else "largely consistent"
+        "a strong manipulation signal"
+        if fake_percentage >= 60
+        else "mixed authenticity signals"
+        if fake_percentage >= 40
+        else "a relatively low manipulation signal"
     )
+
     return (
-        f"The model considers this media {verdict}. Attention peaks over a "
-        f"{dominant.width}x{dominant.height}px area at ({dominant.x}, "
-        f"{dominant.y}), covering {dominant.area_percentage:.1f}% of the frame; "
-        f"{manipulation_percentage:.1f}% of all pixels exceed the activation "
-        "threshold."
+        f"The model produced {verdict} with a fake probability of "
+        f"{fake_percentage:.1f}%. Grad-CAM shows its strongest activation "
+        f"over a {dominant.width}x{dominant.height}px region at "
+        f"({dominant.x}, {dominant.y}), covering "
+        f"{dominant.area_percentage:.1f}% of the frame."
     )
 
 
@@ -108,21 +111,20 @@ def _reasons(
     fake_percentage: float,
 ) -> list[str]:
     reasons: list[str] = []
-    if regions:
+    if fake_percentage >= 60:
         reasons.append(
-            f"{len(regions)} activated region(s) isolated by Grad-CAM, "
-            f"strongest at {regions[0].confidence:.1f}% activation."
+            f"The model's fake probability is high at {fake_percentage:.1f}%."
         )
-    if manipulation_percentage >= 25:
+    elif fake_percentage >= 40:
         reasons.append(
-            f"{manipulation_percentage:.1f}% of the frame exceeds the "
-            "manipulation activation threshold."
+            f"The model produced mixed signals with a fake probability of "
+            f"{fake_percentage:.1f}%."
         )
     else:
         reasons.append(
-            f"Only {manipulation_percentage:.1f}% of the frame is highly "
-            "activated, indicating localized rather than global influence."
-        )
+        f"The model's fake probability is relatively low at "
+        f"{fake_percentage:.1f}%."
+    )
     if fake_percentage >= 60:
         reasons.append("Synthesis-like texture and edge statistics dominate "
                        "the highlighted areas.")

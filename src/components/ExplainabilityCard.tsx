@@ -45,7 +45,7 @@ export function ExplainabilityCard({ result, isAnalyzing }: Props) {
 
   const method = explainability?.method ?? "heuristic";
   const manipulation = explainability?.manipulationPercentage ?? 0;
-
+  const faceCount = result?.faceAnalysis?.faceCount ?? null;
   return (
     <div className="flex flex-1 flex-col">
       {/* Heatmap viewport */}
@@ -76,10 +76,18 @@ export function ExplainabilityCard({ result, isAnalyzing }: Props) {
 
       {explainability?.available && (
         <div className="mt-4 space-y-3">
-          <div className="grid grid-cols-2 gap-2.5 sm:grid-cols-3">
+          <div
+  className={`grid grid-cols-2 gap-2.5 ${
+    faceCount !== null ? "sm:grid-cols-4" : "sm:grid-cols-3"
+  }`}
+>
             <Stat label="Manipulation" value={`${manipulation.toFixed(1)}%`} />
-            <Stat label="Regions" value={`${explainability.regions.length}`} />
-            <Stat label="Focus" value={explainability.mostSuspiciousRegion ?? "—"} />
+
+<Stat label="Faces Detected" value={faceCount === null ? "—" : `${faceCount}`} />
+
+<Stat label="Regions" value={`${explainability.regions.length}`} />
+
+<Stat label="Focus" value={explainability.mostSuspiciousRegion ?? "—"} />
           </div>
 
           {explainability.summary && (

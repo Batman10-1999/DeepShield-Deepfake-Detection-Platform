@@ -7,8 +7,11 @@ temporal consistency measure. Deliberately mirrors the multi-face
 from __future__ import annotations
 
 from dataclasses import dataclass
+from itertools import count
 from statistics import pstdev
 from typing import Sequence
+
+from sympy import ordered
 
 from app.core.config import settings
 from app.services.ai.confidence_calibrator import sanitize_probability
@@ -90,11 +93,31 @@ class FrameAggregator:
             return probabilities[0]
         if self._strategy == "max":
             return max(probabilities)
+
         if self._strategy == "weighted":
-            # Confident frames carry more weight than hesitant ones.
-            weights = [max(1.0, v.confidence) for v in verdicts]
-            total = float(sum(weights))
-            return sum(p * w for p, w in zip(probabilities, weights)) / total
+    # Confident frames carry more weight than hesitant ones.
+             weights = [max(1.0, v.confidence) for v in verdicts]
+             total = float(sum(weights))
+             return sum(p * w for p, w in zip(probabilities, weights)) / total
+
+        if self._strategy == "topk_mean":
+    # Video manipulation may appear strongly in only part of a clip.
+    # A plain mean can dilute those frames with many low-signal frames.
+    #
+    # Use the strongest 25% of frame evidence, while requiring at least
+    # two frames whenever multiple frames are available. This avoids
+    # allowing a single noisy frame to decide the entire video.
+            ordered = sorted(probabilities, reverse=True)
+            count = len(ordered)
+
+            if count == 1:
+                return ordered[0]
+
+            top_k = max(2, int(round(count * 0.25)))
+            top_k = min(top_k, count)
+
+            return sum(ordered[:top_k]) / top_k
+
         return sum(probabilities) / len(probabilities)
 
     @staticmethod

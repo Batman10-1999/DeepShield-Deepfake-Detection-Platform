@@ -89,6 +89,7 @@ def render(
     cam: np.ndarray,
     *,
     opacity: float | None = None,
+    regions=None,
 ) -> HeatmapRender:
     """Produce the full-resolution CAM plus heatmap and overlay PNGs."""
     rgb = np.asarray(image.convert("RGB"))
@@ -97,6 +98,13 @@ def render(
         settings.GRADCAM_OVERLAY_OPACITY if opacity is None else opacity)
 
     full_cam = upscale_cam(cam, (width, height))
+    if regions:
+        full_cam = _focus_cam_on_regions(
+            full_cam,
+            regions,
+            width,
+            height,
+        )
     heatmap_bgr = colorize(full_cam)
     base_bgr = cv2.cvtColor(rgb, cv2.COLOR_RGB2BGR)
 
@@ -121,6 +129,65 @@ def encode_png(bgr_image: np.ndarray) -> str:
         raise ValueError("Heatmap could not be encoded as PNG.")
     return base64.b64encode(buffer.tobytes()).decode("ascii")
 
+def _focus_cam_on_regions(
+    cam: np.ndarray,
+    regions,
+    width: int,
+    height: int,
+) -> np.ndarray:
+    """Gently concentrate Grad-CAM around detected face regions.
+
+    Keeps the face area fully visible while retaining a small amount
+    of surrounding context. Does not affect model inference.
+    """
+    mask = np.zeros((height, width), dtype=np.float32)
+
+    for region in regions:
+        x = max(0, int(region.x))
+        y = max(0, int(region.y))
+        w = max(0, int(region.width))
+        h = max(0, int(region.height))
+
+        if w <= 0 or h <= 0:
+            continue
+
+        x2 = min(width, x + w)
+        y2 = min(height, y + h)
+
+        if x >= x2 or y >= y2:
+            continue
+
+        # Slightly expand the face region for natural-looking context.
+        pad_x = int(w * 0.12)
+        pad_y = int(h * 0.12)
+
+        x1 = max(0, x - pad_x)
+        y1 = max(0, y - pad_y)
+        x2 = min(width, x2 + pad_x)
+        y2 = min(height, y2 + pad_y)
+
+        mask[y1:y2, x1:x2] = 1.0
+
+    if float(mask.max()) == 0.0:
+        return cam
+
+    # Soft edges prevent an artificial rectangular boundary.
+    kernel = max(9, min(31, int(min(width, height) * 0.02)))
+    if kernel % 2 == 0:
+        kernel += 1
+
+    mask = cv2.GaussianBlur(mask, (kernel, kernel), 0)
+
+    # Keep 15% of surrounding CAM so we don't create a hard face-only map.
+    mask = 0.15 + 0.85 * mask
+
+    focused = cam * mask
+
+    peak = float(focused.max())
+    if peak > 0.0:
+        focused /= peak
+
+    return np.clip(focused, 0.0, 1.0).astype(np.float32)
 
 def _clamp_opacity(value: float) -> float:
     return float(max(0.0, min(1.0, value)))

@@ -189,7 +189,11 @@ class GradCamExplainer(ExplainabilityProvider):
                 confidence=confidence,
             )
 
-        rendered = render(image, cam_result.cam)
+        rendered = render(
+            image,
+            cam_result.cam,
+            regions=regions,
+        )
         detected = extract_regions(rendered.cam)
         coverage = manipulation_percentage(rendered.cam)
         summary = build_summary(
@@ -214,8 +218,11 @@ class GradCamExplainer(ExplainabilityProvider):
             reasons=summary.reasons,
             available=True,
             heatmap_shape=[rendered.height, rendered.width],
-            regions=[self._to_region(r) for r in detected]
-            or list(regions or []),
+            regions=(
+            list(regions)
+            if regions
+            else [self._to_region(r) for r in detected]
+        ),
             overlay_opacity=rendered.opacity,
             confidence_overlay=round(fake_percentage, 2),
             summary=summary.summary,
