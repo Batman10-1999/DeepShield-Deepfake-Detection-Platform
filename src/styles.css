@@ -1,0 +1,406 @@
+@import "tailwindcss" source(none);
+@source "../src";
+@import "tw-animate-css";
+
+@custom-variant dark (&:is(.dark *));
+
+@theme inline {
+  --radius-sm: calc(var(--radius) - 4px);
+  --radius-md: calc(var(--radius) - 2px);
+  --radius-lg: var(--radius);
+  --radius-xl: calc(var(--radius) + 4px);
+  --radius-2xl: calc(var(--radius) + 8px);
+  --color-background: var(--background);
+  --color-foreground: var(--foreground);
+  --color-card: var(--card);
+  --color-card-foreground: var(--card-foreground);
+  --color-popover: var(--popover);
+  --color-popover-foreground: var(--popover-foreground);
+  --color-primary: var(--primary);
+  --color-primary-foreground: var(--primary-foreground);
+  --color-primary-glow: var(--primary-glow);
+  --color-secondary: var(--secondary);
+  --color-secondary-foreground: var(--secondary-foreground);
+  --color-muted: var(--muted);
+  --color-muted-foreground: var(--muted-foreground);
+  --color-accent: var(--accent);
+  --color-accent-foreground: var(--accent-foreground);
+  --color-destructive: var(--destructive);
+  --color-destructive-foreground: var(--destructive-foreground);
+  --color-success: var(--success);
+  --color-success-foreground: var(--success-foreground);
+  --color-warning: var(--warning);
+  --color-warning-foreground: var(--warning-foreground);
+  --color-border: var(--border);
+  --color-input: var(--input);
+  --color-ring: var(--ring);
+  --color-sidebar: var(--sidebar);
+  --color-sidebar-foreground: var(--sidebar-foreground);
+  --color-sidebar-active: var(--sidebar-active);
+  --color-sidebar-active-foreground: var(--sidebar-active-foreground);
+  --color-sidebar-hover: var(--sidebar-hover);
+}
+
+/* ── Theme 1: original DeepShield light / colourful palette ─────── */
+:root {
+  --radius: 1rem;
+
+  --background: oklch(0.95 0.005 250);
+  --foreground: oklch(0.22 0.03 260);
+
+  --card: oklch(1 0 0);
+  --card-foreground: oklch(0.22 0.03 260);
+
+  --popover: oklch(1 0 0);
+  --popover-foreground: oklch(0.22 0.03 260);
+
+  /* DeepShield brand cyan */
+  --primary: oklch(0.72 0.115 205);
+  --primary-foreground: oklch(0.19 0.03 240);
+  --primary-glow: oklch(0.82 0.095 198);
+
+  --secondary: oklch(0.96 0.008 250);
+  --secondary-foreground: oklch(0.3 0.04 260);
+
+  --muted: oklch(0.96 0.006 250);
+  --muted-foreground: oklch(0.5 0.02 260);
+
+  --accent: oklch(0.94 0.04 255);
+  --accent-foreground: oklch(0.3 0.1 260);
+
+  --destructive: oklch(0.62 0.22 25);
+  --destructive-foreground: oklch(0.99 0 0);
+
+  --success: oklch(0.62 0.17 150);
+  --success-foreground: oklch(0.99 0 0);
+
+  --warning: oklch(0.72 0.17 55);
+  --warning-foreground: oklch(0.2 0.05 60);
+
+  --border: oklch(0.91 0.008 250);
+  --input: oklch(0.91 0.008 250);
+  --ring: var(--primary);
+
+  --sidebar: oklch(0.93 0.005 250);
+  --sidebar-foreground: oklch(0.35 0.02 260);
+  --sidebar-active: var(--primary);
+  --sidebar-active-foreground: oklch(0.99 0 0);
+  --sidebar-hover: oklch(0.9 0.008 250);
+
+  --gradient-bg: linear-gradient(
+    180deg,
+    color-mix(in oklab, var(--background) 88%, var(--card)) 0%,
+    var(--background) 100%
+  );
+  --gradient-sidebar: linear-gradient(
+    180deg,
+    var(--sidebar) 0%,
+    color-mix(in oklab, var(--sidebar) 86%, var(--background)) 100%
+  );
+  --gradient-primary: linear-gradient(135deg, var(--primary), var(--primary-glow));
+  --gradient-card: linear-gradient(
+    180deg,
+    var(--card) 0%,
+    color-mix(in oklab, var(--card) 94%, var(--background)) 100%
+  );
+
+  --shadow-card:
+    0 2px 12px -4px oklch(0.3 0.03 260 / 0.14), 0 1px 3px -1px oklch(0.3 0.03 260 / 0.1);
+  --shadow-elevated: 0 12px 34px -12px oklch(0.3 0.03 260 / 0.22);
+  --shadow-glow: 0 0 24px oklch(0.72 0.115 205 / 0.3);
+
+  --deepshield-brand: oklch(0.72 0.115 205);
+}
+
+/* ── Theme 2: dark monochrome — black, white and neutral greys only ── */
+.dark {
+  --background: oklch(0.09 0 0);
+  --foreground: oklch(0.97 0 0);
+
+  --card: oklch(0.15 0 0);
+  --card-foreground: oklch(0.97 0 0);
+
+  --popover: oklch(0.15 0 0);
+  --popover-foreground: oklch(0.97 0 0);
+
+  --primary: oklch(0.97 0 0);
+  --primary-foreground: oklch(0.11 0 0);
+  --primary-glow: oklch(0.85 0 0);
+
+  --secondary: oklch(0.2 0 0);
+  --secondary-foreground: oklch(0.95 0 0);
+
+  --muted: oklch(0.22 0 0);
+  --muted-foreground: oklch(0.72 0 0);
+
+  --accent: oklch(0.25 0 0);
+  --accent-foreground: oklch(0.96 0 0);
+
+  --destructive: oklch(0.75 0 0);
+  --destructive-foreground: oklch(0.11 0 0);
+
+  --success: oklch(0.9 0 0);
+  --success-foreground: oklch(0.11 0 0);
+
+  --warning: oklch(0.8 0 0);
+  --warning-foreground: oklch(0.11 0 0);
+
+  --border: oklch(0.3 0 0);
+  --input: oklch(0.3 0 0);
+  --ring: oklch(0.75 0 0);
+
+  --sidebar: oklch(0.12 0 0);
+  --sidebar-foreground: oklch(0.82 0 0);
+  --sidebar-active: oklch(0.97 0 0);
+  --sidebar-active-foreground: oklch(0.11 0 0);
+  --sidebar-hover: oklch(0.22 0 0);
+
+  --gradient-bg: linear-gradient(180deg, oklch(0.12 0 0) 0%, oklch(0.08 0 0) 100%);
+  --gradient-sidebar: linear-gradient(180deg, oklch(0.14 0 0) 0%, oklch(0.1 0 0) 100%);
+  --gradient-primary: linear-gradient(135deg, oklch(0.97 0 0), oklch(0.82 0 0));
+  --gradient-card: linear-gradient(180deg, oklch(0.16 0 0) 0%, oklch(0.13 0 0) 100%);
+
+  --shadow-card: 0 2px 12px -4px oklch(0 0 0 / 0.55), 0 1px 3px -1px oklch(0 0 0 / 0.4);
+  --shadow-elevated: 0 12px 34px -12px oklch(0 0 0 / 0.7);
+  --shadow-glow: 0 0 24px oklch(1 0 0 / 0.12);
+
+  --deepshield-brand: #ffffff;
+}
+
+@layer base {
+  * {
+    border-color: var(--color-border);
+  }
+  body {
+    background: var(--gradient-bg);
+    background-attachment: fixed;
+    color: var(--color-foreground);
+    min-height: 100vh;
+    font-family:
+      "Inter",
+      ui-sans-serif,
+      system-ui,
+      -apple-system,
+      "Segoe UI",
+      Roboto,
+      "Helvetica Neue",
+      Arial,
+      sans-serif;
+    -webkit-font-smoothing: antialiased;
+  }
+  @media (prefers-reduced-motion: reduce) {
+    * {
+      transition-duration: 1ms !important;
+      animation-duration: 1ms !important;
+    }
+  }
+}
+
+.brand-wordmark {
+  font-family: "Montserrat", "Helvetica Neue", Arial, sans-serif;
+  font-style: italic;
+  font-weight: 800;
+  color: var(--color-foreground);
+  letter-spacing: -0.015em;
+  -webkit-font-smoothing: antialiased;
+  text-rendering: optimizeLegibility;
+}
+
+/* Shared card surface: consistent radius, border, elevation and hover lift */
+@utility surface-card {
+  background: var(--gradient-card);
+  border: 1px solid var(--color-border);
+  border-radius: var(--radius-2xl);
+  box-shadow: var(--shadow-card);
+
+  &:hover {
+    box-shadow: var(--shadow-elevated);
+    border-color: color-mix(in oklab, var(--color-foreground) 24%, var(--color-border));
+  }
+}
+
+@utility sidebar-surface {
+  background: var(--gradient-sidebar);
+  box-shadow: 4px 0 24px -14px oklch(0 0 0 / 0.7);
+}
+
+/* Neutral glow behind the shield mark */
+@utility logo-glow {
+  filter: drop-shadow(0 2px 6px oklch(0 0 0 / 0.5));
+}
+
+@keyframes fade-in-up {
+  from {
+    opacity: 0;
+    transform: translateY(10px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+.animate-fade-in-up {
+  animation: fade-in-up 0.45s ease-out both;
+}
+
+/* Sidebar navigation item */
+@utility nav-item {
+  display: flex;
+  align-items: center;
+  gap: 0.75rem;
+  border-radius: var(--radius-lg);
+  padding: 0.625rem 0.75rem;
+  font-size: 0.875rem;
+  font-weight: 500;
+  letter-spacing: -0.005em;
+  color: var(--color-sidebar-foreground);
+  transition:
+    background-color 180ms ease,
+    color 180ms ease,
+    box-shadow 180ms ease;
+
+  &:hover {
+    background: var(--color-sidebar-hover);
+    color: var(--color-foreground);
+  }
+}
+
+@utility nav-item-active {
+  position: relative;
+  color: var(--color-foreground);
+  background: color-mix(in oklab, var(--color-foreground) 12%, transparent);
+  box-shadow: inset 0 0 0 1px color-mix(in oklab, var(--color-foreground) 26%, transparent);
+
+  &::before {
+    content: "";
+    position: absolute;
+    left: 0;
+    top: 22%;
+    bottom: 22%;
+    width: 3px;
+    border-radius: 999px;
+    background: var(--color-foreground);
+  }
+}
+
+/* Subtle repeating security watermark for the certificate sheet */
+@utility cert-watermark {
+  background-image: repeating-linear-gradient(
+    -45deg,
+    color-mix(in oklab, var(--color-foreground) 6%, transparent) 0px,
+    color-mix(in oklab, var(--color-foreground) 6%, transparent) 1px,
+    transparent 1px,
+    transparent 13px
+  );
+}
+
+@utility cert-guilloche {
+  background-image:
+    radial-gradient(
+      circle at 15% 20%,
+      color-mix(in oklab, var(--color-foreground) 7%, transparent) 0,
+      transparent 42%
+    ),
+    radial-gradient(
+      circle at 85% 80%,
+      color-mix(in oklab, var(--color-foreground) 7%, transparent) 0,
+      transparent 42%
+    );
+}
+
+/* Section label used across analysis + explainability panels */
+@utility section-label {
+  font-size: 0.625rem;
+  line-height: 1;
+  font-weight: 600;
+  letter-spacing: 0.12em;
+  text-transform: uppercase;
+  color: var(--color-muted-foreground);
+}
+
+@keyframes float-soft {
+  0%,
+  100% {
+    transform: translateY(0);
+  }
+  50% {
+    transform: translateY(-6px);
+  }
+}
+.animate-float-soft {
+  animation: float-soft 5s ease-in-out infinite;
+}
+
+@media print {
+  body {
+    background: #fff !important;
+  }
+  aside,
+  .print-hide {
+    display: none !important;
+  }
+  .print-sheet {
+    position: static !important;
+    box-shadow: none !important;
+    border: none !important;
+  }
+}
+
+/* ── Intro experience ─────────────────────────────────────────────
+   CSS-driven so the cinematic opener costs nothing on the main thread. */
+@keyframes intro-drift {
+  0% {
+    transform: translate3d(0, 0, 0);
+    opacity: 0;
+  }
+  15% {
+    opacity: 0.9;
+  }
+  100% {
+    transform: translate3d(var(--dx), var(--dy), 0);
+    opacity: 0;
+  }
+}
+@keyframes intro-scan {
+  0% {
+    top: 0%;
+    opacity: 0;
+  }
+  10% {
+    opacity: 1;
+  }
+  90% {
+    opacity: 1;
+  }
+  100% {
+    top: 100%;
+    opacity: 0;
+  }
+}
+@keyframes intro-pulse {
+  0% {
+    transform: scale(0.9);
+    opacity: 0.7;
+  }
+  70% {
+    transform: scale(1.6);
+    opacity: 0;
+  }
+  100% {
+    transform: scale(1.6);
+    opacity: 0;
+  }
+}
+@keyframes intro-fade {
+  from {
+    opacity: 0;
+    transform: translateY(12px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+.intro-fade {
+  animation: intro-fade 700ms cubic-bezier(0.22, 1, 0.36, 1) both;
+}

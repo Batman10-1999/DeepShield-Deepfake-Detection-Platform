@@ -1,0 +1,15 @@
+# DeepShield backend runtime dependencies.
+# Versions are ranged rather than hard-pinned because the project is run on
+# Python 3.10 through 3.13; hard pins (torch==2.4.1) have no wheels on 3.13
+# and broke `pip install -r requirements.txt` on newer interpreters.
+fastapi>=0.115.0,<1.0
+uvicorn[standard]>=0.30.6,<1.0
+python-multipart>=0.0.9
+pillow>=10.4.0
+numpy>=1.26.4,<3.0
+# OpenCV must stay on 4.x: 5.x removed cv2.CascadeClassifier, which the
+# Haar-based face detector depends on.
+opencv-python-headless>=4.10,<5
+torch>=2.4,<3
+torchvision>=0.19,<1
+pydantic>=2.9.2,<3
