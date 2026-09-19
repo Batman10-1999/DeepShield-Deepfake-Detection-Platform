@@ -1,0 +1,23 @@
+{
+  "compatibility_date": "2025-09-24",
+  "$schema": "node_modules/wrangler/config-schema.json",
+  "name": "tanstack-start-app",
+  "compatibility_flags": [
+    "nodejs_compat"
+  ],
+  "main": "index.mjs",
+  "assets": {
+    "binding": "ASSETS",
+    "directory": "..\\public"
+  },
+  "no_bundle": true,
+  "rules": [
+    {
+      "type": "ESModule",
+      "globs": [
+        "**/*.mjs",
+        "**/*.js"
+      ]
+    }
+  ]
+}

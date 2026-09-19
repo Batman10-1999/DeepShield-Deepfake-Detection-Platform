@@ -1,10 +1,12 @@
 """DeepShield FastAPI entrypoint.
 
 Run locally with:
-    uvicorn main:app --reload --host 0.0.0.0 --port 8000
+    uvicorn app.main:app --reload --host 0.0.0.0 --port 8000
 """
+import gc
 from contextlib import asynccontextmanager
 
+import torch
 from fastapi import FastAPI
 from fastapi.middleware.cors import CORSMiddleware
 
@@ -17,6 +19,9 @@ from app.core.constants import LogEvent
 from app.core.logger import get_logger
 from app.services.model_loader import ModelLoader
 
+# Limit PyTorch CPU threads to prevent thread contention on shared micro-cores
+torch.set_num_threads(2)
+
 logger = get_logger(__name__)
 
 
@@ -24,14 +29,13 @@ logger = get_logger(__name__)
 async def lifespan(_: FastAPI):
     logger.info(LogEvent.APP_STARTED)
     # The CNN is loaded eagerly so future prediction requests are fast.
-    # If loading fails (e.g. torch not installed on a machine used purely
-    # for the upload/preprocessing demo), the app keeps running.
     try:
         ModelLoader.get_instance().load(settings.DEFAULT_MODEL)
         logger.info("Model Loaded: %s", settings.DEFAULT_MODEL)
     except Exception as exc:  # pragma: no cover - defensive
         logger.warning("Model not loaded (%s). Upload + preprocessing still work.", exc)
     yield
+    gc.collect()
     logger.info(LogEvent.APP_STOPPED)
 
 
@@ -50,10 +54,19 @@ app = FastAPI(
     lifespan=lifespan,
 )
 
-# The React frontend runs on a separate origin during development.
+# CORS Middleware allowing localhost and Vercel frontends
 app.add_middleware(
     CORSMiddleware,
-    allow_origins=["*"],
+    allow_origins=[
+        "http://localhost:8080",
+        "http://localhost:8081",
+        "http://localhost:5173",
+        "http://127.0.0.1:8080",
+        "http://127.0.0.1:8081",
+        "https://deepshield-deepfake-detection-platform.onrender.com",
+        "*"
+    ],
+    allow_credentials=False,  # Set to False when allow_origins includes wildcard "*"
     allow_methods=["*"],
     allow_headers=["*"],
 )

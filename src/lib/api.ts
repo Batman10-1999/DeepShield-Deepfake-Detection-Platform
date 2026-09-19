@@ -3,7 +3,8 @@
 
 import axios, { AxiosError } from "axios";
 
-export const BACKEND_URL = "https://deepshield-deepfake-detection-platform.onrender.com";
+export const BACKEND_URL =
+  import.meta.env.localVITE_API_BASE_URL || "http://localhost:8000";
 
 export const api = axios.create({
   baseURL: BACKEND_URL,

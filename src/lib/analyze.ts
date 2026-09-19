@@ -46,7 +46,8 @@ function isNetworkError(err: unknown): boolean {
     msg.includes("network") ||
     msg.includes("could not reach") ||
     msg.includes("failed to fetch") ||
-    msg.includes("econnrefused")
+    msg.includes("econnrefused") ||
+    msg.includes("timeout")
   );
 }
 
